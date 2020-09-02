@@ -1,0 +1,180 @@
+--Exercises: Type matching
+--  1) {a} -> {c}
+--     {b} -> {d}
+--     {c} -> {b}
+--     {d} -> {a}
+--     {e} -> {e}
+
+
+--Exercises: Type arguments
+--  1) a. 
+--  2) d.
+--  3) b.
+--  4) d. ** Note that h is undefined, and Num is polymorphic. So the
+--  type-class constrain remains.
+--  5) a. ** We passed in a concrete type (string) so the type-class
+--  constrain (Ord a) has to implement it.
+--  6) e. This partially-applied function has yet to have a concrete
+--  type for argument b. But argument a already has a concrete type
+--  string.
+--  7) d. ** Why? Why isn't it option e?
+--  8) a. ** as above
+--  9) c.
+--
+
+
+--Exercises: Parametricity
+--  1) I tried using an if-else as below:
+--          parafool :: a -> b
+--          parafool x = if (x == 0) then "hello" else x
+--      
+--      Turns out the compiler infers the types of a and b from the
+--      contents of the function, and throws an error because there is
+--      no implementation of Num Char from the literal '0'.
+--
+--  2)  **
+--      a -> a -> a
+--      We need nested functions that are parametrically polymorphic.
+--      This means they need to return the same type as the input,
+--      regardless of what the input is.
+--
+--      The only two functions that I can think of are essentially the
+--      uncurried fst and snd functions, that are type restricted to
+--      take arguements of the same type.
+--
+--          myfst :: a -> a -> a
+--          myfst x y = x
+--
+--          mysnd :: a -> a -> a
+--          mysnd x y = y
+--
+--      Because the arguments are constrained to have the same types, us
+--      trying to violate the constraints of parametrically polymorphic
+--      values (i.e. implementing a function that adds both arguments
+--      and returns the value) causes a typeclass constrain (Num a =>) 
+--      to be enforced on the function type.
+--
+--
+--  3)  ** What does implementation mean? Does it mean to write out a
+--      function that has the type mentioned?
+--
+--      a -> b -> b
+--
+--      f2 :: a -> b -> b
+--      f2 x y = y
+--      
+--      In this case, a and b are parametrically polymorphic in their
+--      own "argument"-space. If there were N types, there would be N^2
+--      implementations of a -> b -> b. There shouldn't be any changes
+--      in behavior when the types of a and b change.
+
+
+--  ** PARAMETRIC CONSTANTS:
+--      In x = 5 + 6 :: Int, which of the following happens?
+--          1) x = 5 + (6 :: Int)
+--          2) x = (5 + 6) :: Int
+--      Comparing it to myCom x = x > 1 :: Int, it seems like the answer
+--      is (2). At this point however, I ask why? Is the '::' operator
+--      infixl? ':i ::' throws an error :/
+
+
+--Exercise: Apply Yourself
+--  1) Type signature changes to [char] -> [char]
+--  2) Type signature changes to Fractional a => a -> a
+--  3) Type signature changes to Int -> [Char] -> [Char] 
+--  4) Type signature changes to Int -> Bool 
+--  5) Type signature changes to Char -> Bool
+--
+
+
+--Chapter Exercises
+--
+--Multiple Choice
+--  1) c
+--  2) a
+--  3) b
+--  4) c
+--
+--Determine the type
+--  1)  a) 54. Num a => a
+--      b) (0, "doge). Num a => (a, [Char])
+--      c) False. Bool
+--      d) 5. Int
+--      e) False. Bool
+--  
+--  2) '*' has type signature Num a => a -> a -> a. Given that the rest
+--      of the arguements have not had a concrete type implemented, the 
+--      type of w should retain its Num typeclass constrain Num a => a.
+--  
+--  3)  In this case, z is a function that takes algebraic variable y.
+--      Using alpha equivalence, we rewrite z for better clarity.
+--          
+--          z c = c * 10
+--
+--      The type signature of z should take the form Num a => a -> a.
+--  
+--  4)  The '/' operator in f implements the restrictive constrain of 
+--      Fractional. Whlist the rest of the function has the
+--      less-restrictive typeclass constrain of Num.
+--      Thus we expect the type of f to be Fractional a => a
+--  
+--  5)  [Char]
+--
+--
+--Does it compile?
+--  1)  Nope it doesn't compile.
+--      Fix: 
+--          bigNum x = (^) 5 $ x
+--          wahoo = bigNum $ 10
+--  2)  It compiles
+--  3)  Nope it doesn't.
+--      Fix:
+--          a = (+)
+--          b = 5
+--          c = a b 10
+--          d = a c 200
+--  4)  It doesn't compile.
+--      Fix:
+--          c = undefined
+--          b = 10000 * c
+--          a = 12 + b
+--
+--
+--Type variable or specific type constructor?
+--  2)  zed: fully polymorphic
+--      Zed: concrete
+--      Blah: concrete
+--
+--
+--Write a type signature
+--  1)  functionH :: [a] -> a
+--
+--
+--Given a type, write the function
+--  1)  i :: a -> a
+--      i x = x
+--  2)
+--
+--  3)  Yes they are equivalent.
+--      c'' x y = x
+--  4) 
+--
+--  5)  r :: [a] -> [a]
+--      r x = take 3 x (alternatively tail 3 x)
+--  6)
+--
+--  7)  a :: (a -> c) -> a -> a
+--      a aToc a = fst (a, aToc)
+--  8)
+--
+--
+--Fix It
+--  1) Refer to 5_sing.hs
+--  2)
+--  3)
+--
+--TypeKwonDo
+--  1) h x = g (f x)
+--  2)
+--  3) xform (a, b) = (xz a, yz b)
+--  4)
