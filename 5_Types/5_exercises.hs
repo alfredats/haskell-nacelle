@@ -74,8 +74,8 @@
 --          1) x = 5 + (6 :: Int)
 --          2) x = (5 + 6) :: Int
 --      Comparing it to myCom x = x > 1 :: Int, it seems like the answer
---      is (2). At this point however, I ask why? Is the '::' operator
---      infixl? ':i ::' throws an error :/
+--      is (2) because of the compile error. At this point however, I 
+--      ask why? Is the '::' operator infixl? ':i ::' throws an error :/
 
 
 --Exercise: Apply Yourself
