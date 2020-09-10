@@ -43,7 +43,7 @@ instance Show DayOfWeek where
     show Sun = "Sun"
 
 data Date = 
-    Date DayOfWeek Int deriving Show
+    Date DayOfWeek Int 
 
 instance Eq Date where
     (==) (Date weekday dayOfMonth)
@@ -59,8 +59,9 @@ instance Eq Date where
 --  * I've tried $, . and parenthesising each of the expressions... 
 
 
---instance Show Date where
---    show weekday dayOfMonth = (show weekday) (show dayOfMonth)
+instance Show Date where
+    show (Date weekday dayOfMonth) = 
+        (show weekday) ++ " " ++ (show dayOfMonth)
 
 -----------------------------------------------------------
 
