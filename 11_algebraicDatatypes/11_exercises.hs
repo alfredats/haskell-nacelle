@@ -175,6 +175,9 @@ capitalizeParagraph = concat . map capitalizeWord . tokenize
 
 
 
+-- Phone exercise
+--    refer to 11_phoneExercise.hs
 
 
-
+-- Hutton's Razor
+--    refer to 11_huttonsRazor.hs
