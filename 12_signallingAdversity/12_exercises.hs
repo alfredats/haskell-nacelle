@@ -75,5 +75,18 @@ mkPerson' name age
 -- 1) id :: *
 -- 2) a :: * , f :: * -> *
 --
+--
 -- String Processing
 --    refer to 12_StringProcessing.hs
+--
+--
+-- Validate the word
+--    refer to 12_validateWord.hs
+--
+--
+-- It's only Natural
+--    refer to 12_natural.hs
+--
+--
+-- Small library for Maybe
+--    refer to 12_maybeLibrary.hs
