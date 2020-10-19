@@ -90,3 +90,14 @@ mkPerson' name age
 --
 -- Small library for Maybe
 --    refer to 12_maybeLibrary.hs
+--
+--
+-- Small library for Either
+--    refer to 12_eitherLibrary.hs
+--
+--
+-- Unfolds
+--    refer to 12_unfolds.hs
+--
+-- Something other than a list!
+--    refer to 12_binaryTree.hs
