@@ -1,0 +1,13 @@
+cradle:
+  stack:
+    - path: "./src"
+      component: "wordNumber:lib"
+
+    - path: "./app/Main.hs"
+      component: "wordNumber:exe:wordNumber"
+
+    - path: "./app/Paths_wordNumber.hs"
+      component: "wordNumber:exe:wordNumber"
+
+    - path: "./test"
+      component: "wordNumber:test:wordNumber-test"

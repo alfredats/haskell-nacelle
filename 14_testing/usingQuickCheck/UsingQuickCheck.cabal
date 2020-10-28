@@ -1,0 +1,23 @@
+name:                UsingQuickCheck
+version:             0.1.0.0
+-- synopsis:
+-- description:
+homepage:            https://github.com/githubuser/haskell-env#readme
+license:             BSD3
+license-file:        LICENSE
+author:              Chicken Little
+maintainer:          sky@isfalling.org
+copyright:           2020 Author name here
+category:            Text
+build-type:          Simple
+cabal-version:       >=1.10
+
+library
+  exposed-modules:     UsingQuickCheck
+  hs-source-dirs:      . 
+  ghc-options:         -Wall -fwarn-tabs
+  default-language:    Haskell2010
+  build-depends:       base >= 4.7 && < 5
+                     , QuickCheck
+                     , hspec
+                     , extra
