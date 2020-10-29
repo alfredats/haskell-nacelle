@@ -1,0 +1,10 @@
+cradle:
+  stack:
+    - path: "./src"
+      component: "hangman:lib"
+
+    - path: "./app/Main.hs"
+      component: "hangman:exe:hangman"
+
+    - path: "./test"
+      component: "hangman:test:hangman-test"
