@@ -15,8 +15,32 @@ data Form =
 formBoolGen :: Gen Form
 formBoolGen = elements [C True, C False]
 
+formStringGen :: Gen Form
+formStringGen = fmap (V . flip (:) []) $ elements ['a'..'z']
+
 validityGen :: Gen [Form]
 validityGen = sequence [formBoolGen, formBoolGen]
+
+formGen :: Gen Form
+formGen = frequency [ (2, fmap Not $ formGen)
+                    , (2, formBoolGen)
+                    , (2, formStringGen) 
+                    , (2, orGen)
+                    , (2, andGen) ]
+            where
+              orGen :: Gen Form
+              orGen  = do
+                x' <- formGen
+                y' <- formGen
+                return (x' `Or` y')
+              andGen :: Gen Form
+              andGen = do
+                x' <- formGen
+                y' <- formGen
+                return (x' `And` y')
+
+instance Arbitrary Form where
+  arbitrary = formGen 
 
 -- Semantic Equivalence 
 removeConst :: Form -> Form
