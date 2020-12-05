@@ -65,7 +65,55 @@ bind :: Monad m => (a -> m b) -> m a -> m b
 bind f xs = join $ fmap f xs    
 
 
+-- Monads also lift!
+--
+--  The Monad class also includes a set of 'lift' functions. They work 
+--  exactly like the ones in Applicative, but exist due to being
+--  grandfathered in before Applicatives were a thing.
+--
+--  The lifting functions are 'liftM', 'liftM2', 'liftM3'.
 
+
+
+
+-- Do Syntax & Monads
+--
+--  It's important to remember that 'do' syntax works with any monad, 
+--  not just IO. However, strictly speaking it is syntactic sugar, and
+--  not necessarily required to sequence actions.
+--
+--  Like the lift operators, there is an equivalent for the sequencing 
+--  operator of Monad within Applicative.
+--    
+--    (*>) :: Applicative f => f a -> f b -> f b
+--    (>>) :: Monad m       => m a -> m b -> m b
+--
+--  We can see what 'do' syntax does by manually transforming it.
+strseq :: IO ()
+strseq = do 
+  putStrLn "blah" 
+  putStrLn "another thing"
+
+strseq' :: IO ()
+strseq' = 
+  putStrLn "blah" >>
+  putStrLn "another thing"
+
+strseq'' :: IO ()
+strseq'' = 
+  putStrLn "blah" *>
+  putStrLn "another thing" 
+
+--  The same can be done with the variable binding that do syntax uses.
+
+binding :: IO ()
+binding = do
+  name <- getLine
+  putStrLn name
+
+binding' :: IO ()
+binding' = 
+  getLine >>= putStrLn
 
 
 
