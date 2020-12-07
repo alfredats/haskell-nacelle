@@ -18,7 +18,8 @@ instance Functor (V' e) where
 instance Monoid e => Applicative (V' e) where
   pure = Socc
 -- (<*>) :: f (a -> b) -> f a -> f b
-  (<*>) (Foil x) (Foil y) = Foil $ x <> y
+  (<*>) (Foil x) (Foil y) = Foil $ x <> y 
+  -- Either's Applicative does not have the above line
   (<*>) (Foil x) _ = Foil x
   (<*>) _ (Foil y) = Foil y
   (<*>) (Socc x) (Socc y) = Socc $ x y
