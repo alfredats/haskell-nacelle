@@ -5,6 +5,8 @@ import Control.Monad
 import Test.QuickCheck
 import Test.QuickCheck.Checkers
 import Test.QuickCheck.Classes
+import Test.Hspec
+import Data.Char 
 
 -- Monads!
 --
@@ -695,3 +697,84 @@ listCheckers = do
   quickBatch $ monad trigger
 
 
+
+-- Write the following functions using the methods provided by Monad and
+-- Functor. Using stuff like identity and composition is fine, but it 
+-- has to type check with the types provided.
+
+-- 1)
+j :: Monad m => m (m a) -> m a
+j x = x >>= id
+
+
+-- 2)
+l1 :: Monad m => (a -> b) -> m a -> m b
+l1 f mx = do f <$> mx
+
+
+-- 3)
+l2 :: Monad m => (a -> b -> c) -> m a -> m b -> m c
+l2 f mx my = do 
+  x <- mx
+  y <- my
+  return $ f x y
+
+
+-- 4)
+a :: Monad m => m a -> m (a -> b) -> m b
+a mx mf = do
+  x <- mx
+  f <- mf
+  return $ f x
+
+
+-- 5)
+meh :: Monad m => [a] -> (a -> m b) -> m [b]
+meh xs f = sequence $ f <$> xs
+
+
+-- 6)
+flipType :: Monad m => [m a] -> m [a]
+flipType = sequence 
+
+
+
+mfSpecTest :: IO ()
+mfSpecTest = hspec $ do
+  describe "j" $ do
+    it " j [[1,2], [], [3]] == [1,2,3]" $ do
+      j [[1,2],[],[3]] `shouldBe` [1,2,3]
+    it " j (Just (Just 1)) == Just 1" $ do
+      j (Just (Just 1)) `shouldBe` Just 1
+    it " j (Just Nothing) == Nothing" $ do
+      j (Just Nothing) `shouldBe` (Nothing :: Maybe Int)
+    it " j Nothing == Nothing" $ do
+      j Nothing `shouldBe` (Nothing :: Maybe Int)
+  describe "l1" $ do
+    it "l1 (const 1) ['a'..'c'] == [1,1,1]" $ do
+      l1 (const 1) ['a'..'c'] `shouldBe` [1,1,1]
+    it "l1 (+1) Nothing == Nothing" $ do
+      l1 (+1) Nothing `shouldBe` (Nothing :: Maybe Int)
+    it "l1 (+1) (Just 1) == Just 2" $ do
+      l1 (+1) (Just 1) `shouldBe` Just 2
+  describe "l2" $ do
+    it "l2 (+) (Just 1) Nothing == Nothing" $ do
+      l2 (+) (Just 1) Nothing `shouldBe` (Nothing :: Maybe Int) 
+    it "l2 (+) Nothing (Just 1) == Nothing" $ do
+      l2 (+) Nothing (Just 1) `shouldBe` (Nothing :: Maybe Int) 
+    it "l2 (+) Nothing Nothing == Nothing" $ do
+      l2 (+) Nothing Nothing `shouldBe` (Nothing :: Maybe Int) 
+    it "l2 (+) (Just 1) (Just 1) == Just 2" $ do
+      l2 (+) (Just 1) (Just 1) `shouldBe` Just 2 
+  describe "a" $ do
+    it "a Nothing (Just (+1)) == Nothing"$ do
+      a Nothing (Just (+1)) `shouldBe` (Nothing :: Maybe Int)
+    it "a (Just 1) Nothing == Nothing"$ do
+      a (Just 1) Nothing `shouldBe` (Nothing :: Maybe Int)
+    it "a Nothing Nothing == Nothing"$ do
+      a Nothing Nothing `shouldBe` (Nothing :: Maybe Int)
+    it "a (Just 1) (Just (+1)) == Just 2"$ do
+      a (Just 1) (Just (+1)) `shouldBe` Just 2
+  describe "meh" $ do
+    it "meh [97..107] (Just . chr) == Just ['a'..'k']" $ do
+      meh [97..107] (Just . chr) `shouldBe` Just ['a'..'k']
