@@ -1,0 +1,13 @@
+cradle:
+  stack:
+    - path: "./src"
+      component: "SVparse:lib"
+
+    - path: "./app/Main.hs"
+      component: "SVparse:exe:SVparse"
+
+    - path: "./app/Paths_SVparse.hs"
+      component: "SVparse:exe:SVparse"
+
+    - path: "./test"
+      component: "SVparse:test:SVparse-test"

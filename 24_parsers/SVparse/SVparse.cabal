@@ -1,8 +1,10 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.34.2.
+-- This file has been generated from package.yaml by hpack version 0.33.0.
 --
 -- see: https://github.com/sol/hpack
+--
+-- hash: c00352b0986b32b23206533915f0c5dd893e2ac75b0139dc0c6c63c4dc09b55d
 
 name:           SVparse
 version:        0.1.0.0

@@ -5,7 +5,7 @@ import Control.Applicative
 
 data NumberOrString = NOSS String
                     | NOSI Integer
-                    deriving (Eq, Ord, Show)
+                    deriving (Eq, Ord, Show, Read)
 
 type Major = Integer
 type Minor = Integer
@@ -33,8 +33,8 @@ instance Ord SemVer where
 type MMP = (Major, Minor, Patch) 
 type RelMet = Either () String
 
-parserMMP :: Parser MMP
-parserMMP = do
+parseMMP :: Parser MMP
+parseMMP = do
   vMaj <- integer
   _ <- char '.'
   vMin <- integer
@@ -42,34 +42,46 @@ parserMMP = do
   vPatch <- integer
   return (vMaj, vMin, vPatch) 
 
-parseNumberOrString :: (Monad m, TokenParsing m) => 
-  NumberOrString -> m NumberOrString
-parseNumberOrString (NOSS str) = return $ NOSS str
-parseNumberOrString (NOSI int) = return $ NOSI int
-
-noDots :: Parser [NumberOrString]
-noDots = some $ do
-  i <- token (some digit)
-  char '.'
-  return (read i)
-
-parseRel :: Parser [NumberOrString]
-parseRel = undefined
-
+parseNOSI :: Parser NumberOrString 
+parseNOSI = do
+  skipMany (char '.')
+  nums <- some digit
+  skipMany (char '.')
+  return (NOSI $ read nums)
+   
+parseNOSS :: Parser NumberOrString 
+parseNOSS = do
+  skipMany (char '.')
+  NOSS <$> some letter
+    
+parseRelMeta :: Parser [NumberOrString]
+parseRelMeta = many ((parseNOSI <?> "try NOSI") 
+  <|> (parseNOSS <?> "try NOSS"))
 
 parseSemVer :: Parser SemVer
 parseSemVer = do
-  (major, minor, patch) <- parserMMP
-  isEnd <- Left <$> eof <|> Right <$> char '-'
-  case isEnd of 
+  (major, minor, patch) <- parseMMP
+  hasRelease <- Left <$> eof <|> Right <$> char '-'
+  case hasRelease of 
     Right '-' -> do
-      vRel <- parseRel
-      return $ SemVer major minor patch vRel [] 
+      vRel <- parseRelMeta 
+      hasMeta <- Left <$> eof <|> Right <$> char '+'
+      case hasMeta of
+        Right '+' -> do
+          metaData <- parseRelMeta
+          return $ SemVer major minor patch vRel metaData
+        _ -> return $ SemVer major minor patch vRel [] 
     _   -> return $ SemVer major minor patch [] []
   
 pMMP :: String -> IO ()
-pMMP str = print $ parseString parserMMP mempty str
+pMMP str = print $ parseString parseMMP mempty str
 
 
 psv :: String -> IO ()
 psv str = print $ parseString parseSemVer mempty str
+
+
+test :: IO ()
+test = do
+  psv "2.1.1"
+  psv "1.0.0-x.7.z.92"
