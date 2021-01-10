@@ -15,7 +15,7 @@ main = do
   psv "1.0.0-gamma+002"
   putStrLn ""
   putStrLn "psv \"1.0.0-beta+oof.sha.41af286\" == Success (SemVer 1 0 0 [NOSS \"beta\"] [NOSS \"oof\", NOSS \"sha\", NOSS \"41af286\"])"
-  psv "1.0.0-gamma+002"
+  psv "1.0.0-beta+oof.sha.41af286"
   putStrLn ""
   putStrLn "(SemVer 2 1 1 [] []) > (SemVer 2 1 0 [] []) == True"
   print $ SemVer 2 1 1 [] [] > SemVer 2 1 0 [] []

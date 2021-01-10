@@ -1,5 +1,7 @@
 module SVparse where
 
+-- TODO :: parseSemVer currently fails to parse metadata
+
 import Text.Trifecta
 import Control.Applicative
 
