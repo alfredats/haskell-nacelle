@@ -1,0 +1,13 @@
+cradle:
+  stack:
+    - path: "./src"
+      component: "DOTparse:lib"
+
+    - path: "./app/Main.hs"
+      component: "DOTparse:exe:DOTparse"
+
+    - path: "./app/Paths_DOTparse.hs"
+      component: "DOTparse:exe:DOTparse"
+
+    - path: "./test"
+      component: "DOTparse:test:DOTparse-test"

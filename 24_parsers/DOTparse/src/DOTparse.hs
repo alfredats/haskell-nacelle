@@ -1,7 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE QuasiQuotes #-}
 
-module DOTparser where
+module DOTparse where
 
 import Control.Applicative
 import Control.Monad (void)
@@ -9,11 +9,16 @@ import Control.Monad (void)
 import Data.Char (ord)
 import Data.ByteString (ByteString)
 import Data.Graph.Inductive.Graph
+import Data.Tuple.Extra
 
 import Text.RawString.QQ
 import Text.Trifecta
 
 import Test.Hspec
+
+someFunc :: IO ()
+someFunc = putStrLn "someFunc"
+
 
 -- datatypes (Lifted from fgl documentation)
 -- | Unlabeled node
@@ -51,42 +56,27 @@ import Test.Hspec
 --      labNodes  :: gr a b -> [LNode a]
 
 
-dotEx :: ByteString
-dotEx = [r|
-digraph A {
-
-  A -> B
-
-}
-|]
-
-dotEx' :: ByteString
-dotEx' = [r|
-digraph D {
-
-  A -> {B, C, D} -> {F}
-
-}
-|]
-
-
-nodeEx :: String 
-nodeEx = "A -> B -> C"
-
-goToNode :: Parser ()
-goToNode = spaces >> void (string "->")
-
-parseNodeToken :: Parser Char 
-parseNodeToken = spaces *> alphaNum <* (goToNode <|> eof)
-
 genNode :: Parser Node 
 genNode = 
-  ord <$> parseNodeToken
+  ord <$> alphaNum
 
 genLNode :: Parser (LNode String)
 genLNode = do
-  a <- parseNodeToken
+  a <- alphaNum
   return (ord a, [a])
+
+parseEdgeStatement :: Parser ([LNode String], [LEdge String])
+parseEdgeStatement = do
+  ns <- some $ spaces *> genLNode <* (spaces >> optional (string "->"))
+  let f :: [LEdge String] -> (Node, String) -> [LEdge String]
+      f x y
+        | null x = [(fst y, fst y, snd y)]
+        | otherwise = 
+            let x' = last x in 
+              x <> [(snd3 x', fst y, [last $ thd3 x'] <> snd y)]
+      edges = foldl f [] ns
+  return (ns, tail edges)
+
 
 
 genEdge :: Parser Edge
@@ -99,6 +89,36 @@ genLEdge = do
   return (a, b, aName <> " to " <> bName)
 
 
+--      -- | Create a 'Graph' from the list of 'LNode's and 'LEdge's.
+--      --
+--      --   For graphs that are also instances of 'DynGraph', @mkGraph ns
+--      --   es@ should be equivalent to @('insEdges' es . 'insNodes' ns)
+--      --   'empty'@.
+--      mkGraph   :: [LNode a] -> [LEdge b] -> gr a b
+
+genGraph :: Parser (gr String String)
+genGraph = do
+  spaces
+  _ <- token (string "strict") <?> "strict"
+  _ <- (string "graph" <|> string "digraph") >> spaces
+  _ <- skipMany alphaNum >> spaces
+  a <- braces (many parseEdgeStatement)
+  let nodes :: [LNode String]
+      nodes = mconcat $ fst a 
+  return a
+
+graphEx :: String
+graphEx = [r|
+strict digraph myGraph { A -> B }
+|]
+
+nodeEx :: String 
+nodeEx = "A -> B -> C"
+
+
+-- UTILITY FUNCTIONS
+vt p = spaces >> void <$> token p
+
 
 
 -- Test-suite
@@ -110,19 +130,25 @@ test :: IO ()
 test = hspec $ do
   let mkLNode :: (Int, String) -> LNode String
       mkLNode = id
+      mkLEdge :: (Int, Int, String) -> LEdge String
+      mkLEdge = id
   describe "Node generator" $ do
     it "Given arrow notation, generates the nodes required" $ do
-      let m = parseString (some genNode) mempty nodeEx 
+      let p = spaces *> genNode <* (spaces >> optional (string "->")) 
+          m = parseString (some p) mempty nodeEx 
           r = maybeSuccess m
       r `shouldBe` Just [65, 66, 67] 
   describe "Labelled Node generator" $ do
     it "Given arrow notation, generates the\
-      \ labelled nodes required" $ do
-      let m = parseString (some genLNode) mempty nodeEx
+       \ labelled nodes required" $ do
+      let m = parseString (parseEdgeStatement <* eof) mempty nodeEx
           r = maybeSuccess m
-          expOut = map mkLNode [ (65, "A")
-                               , (66, "B")
-                               , (67, "C")
-                               ]
-      r `shouldBe` Just expOut
+          expOut1 = map mkLNode [ (65, "A")
+                                , (66, "B")
+                                , (67, "C")
+                                ]
+          expOut2 = map mkLEdge [ (65, 66, "AB")
+                                , (66, 67, "BC")
+                                ]
+      r `shouldBe` Just (expOut1, expOut2)
 
