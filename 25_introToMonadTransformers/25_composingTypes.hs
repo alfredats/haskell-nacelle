@@ -1,4 +1,4 @@
-{-# LANGUAGE InstanceSigs #-}
+{-p LANGUAGE InstanceSigs #-}
 module ComposingTypes where
 
 import Control.Applicative (liftA2, liftA3)
@@ -293,9 +293,6 @@ instance Bifunctor BeepBoop where
 --  IdentityT
 newtype IdentityT f a = IdentityT { runIdentityT :: f a } deriving Show
 
-instance Functor Identity where
-  fmap f (Identity a) = Identity (f a)
-
 instance (Functor m) => Functor (IdentityT m) where
   fmap f (IdentityT fa) = IdentityT (fmap f fa)
 
@@ -304,7 +301,7 @@ instance Applicative Identity where
   (<*>) (Identity f) (Identity a) = Identity (f a)
 
 instance (Applicative m) => Applicative (IdentityT m) where
-  pure = IdentityT (pure x)
+  pure x = IdentityT (pure x)
   -- remember that the IdentityT data-constructor is wrapping around
   -- something that already has some level of structure, and is
   -- providing "Identity"-like functionality via the wrapper
