@@ -69,7 +69,7 @@ instance Monad m => Monad (EitherT e m) where
 -- f :: a -> EitherT e m b
 
 swapEitherT :: (Functor m) => EitherT e m a -> EitherT a m e 
-swapEitherT (EitherT ema) = EitherT . fmap swapEither $ ema
+swapEitherT (EitherT ema) = EitherT $ swapEither <$> ema
   where swapEither :: Either e a -> Either a e
         swapEither (Left x) = Right x
         swapEither (Right y) = Left y
