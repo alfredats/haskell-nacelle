@@ -1,10 +1,10 @@
 name:                Morra
 version:             0.1.0.0
-github:              "githubuser/Morra"
+github:              "alfredats/Morra"
 license:             BSD3
-author:              "Author name here"
-maintainer:          "example@example.com"
-copyright:           "2021 Author name here"
+author:              "Alfred Ang"
+maintainer:          "AlfredAngTS@gmail.com"
+copyright:           "2021 Alfred Ang"
 
 extra-source-files:
 - README.md
@@ -17,12 +17,13 @@ extra-source-files:
 # To avoid duplicated efforts in documentation and dealing with the
 # complications of embedding Haddock markup inside cabal files, it is
 # common to point users to the README.md file.
-description:         Please see the README on GitHub at <https://github.com/githubuser/Morra#readme>
+description:         Please see the README on GitHub at <https://github.com/AlfredATS/Morra#readme>
 
 dependencies:
 - base >= 4.7 && < 5
 - random >= 1.2
 - transformers
+- trifecta
 
 library:
   source-dirs: src
@@ -37,9 +38,9 @@ executables:
     - -with-rtsopts=-N
     dependencies:
     - Morra
-    whenwhen:
+    when:
     - condition: false
-      other-modules: Paths_Morra  # your package name here
+      other-modules: Paths_Morra  
 
 
 tests:
@@ -53,3 +54,6 @@ tests:
     dependencies:
     - Morra
     - hspec
+    when:
+    - condition: false
+      other-modules: Paths_Morra  
