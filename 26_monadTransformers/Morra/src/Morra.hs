@@ -121,17 +121,24 @@ printScores g = do
 
 morraGame :: Morra ()
 morraGame =  do
-  (MorraInt pT) <- liftIO $ playerIO "What would number like to throw? " morraThrowBounds
+  (MorraInt pT) <- liftIO $ playerIO "What number would you like to throw? " morraThrowBounds
   (MorraInt pS) <- liftIO $ playerIO "What do you guess the sum will be? " morraSumBounds
   cpuG <- liftIO cpuGuess
   updateScores (pT, pS) cpuG        
 
-runGame :: IO ()
-runGame = clearScreen >>= \s -> forever $ do
+runGame :: Game -> IO ()
+runGame game = do
   putStrLn "####################"
   putStrLn "morra! morra! morra!"
   putStrLn "####################"
-  (_, g) <- flip runReaderT (Config PvC) $ runStateT morraGame (Game (0,0) [] $ Config PvC)
+  (_,g) <- flip runReaderT (Config PvC) $ runStateT morraGame game 
   printScores g
+  runGame g 
+
+startGame :: IO ()
+startGame = clearScreen >>= \s -> do
+  runGame (Game (0,0) [] $ Config PvC)
+  
+
 
 
